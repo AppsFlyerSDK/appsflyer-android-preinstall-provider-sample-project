@@ -44,8 +44,8 @@ The partner unique identifier
 public void addPackage(String packageName, long installTimeStamp, org.json.JSONObject data)
 ```
 - `packageName` - the app identifier. For example, com.my.app
-`installTimeStamp` -  Timestamp representing the install time  (Epoch in milliseconds)
-`data` - the object contains attribution parameters. 
+- `installTimeStamp` -  Timestamp representing the install time  (Epoch in milliseconds)
+- `data` - the object contains attribution parameters. 
 
 
 
