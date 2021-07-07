@@ -15,4 +15,3 @@ dist
 *.iml
 build.gradle_mine
 .DS_Store
-gradlew*
