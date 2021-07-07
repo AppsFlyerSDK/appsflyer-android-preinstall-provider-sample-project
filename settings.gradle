@@ -1,0 +1,2 @@
+include ':oemsdk'
+rootProject.name = "Oem"
