@@ -1,5 +1,3 @@
-package com.appsflyer
-
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
@@ -41,7 +39,8 @@ class PreInstallTest {
         val campaign = "euro2020"
         val installTime = System.currentTimeMillis()
         val campaignId = "final"
-        val listDataParams = listOf(DataParams(mediaSource, installTime, appId, campaign, campaignId))
+        val listDataParams =
+            listOf(DataParams(mediaSource, installTime, appId, campaign, campaignId))
         val bodyExpected = Gson().toJson(listDataParams)
         val callbacks = LinkedBlockingQueue<List<PreInstallEntity>>()
         runBlocking {
