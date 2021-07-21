@@ -5,7 +5,7 @@ import com.google.gson.Gson
 
 class PreInstall(
     application: Application,
-    private val result: (List<PreInstallEntity>) -> Unit,
+    private val result: ((List<PreInstallEntity>) -> Unit)?,
     private val mediaSource: String
 ) {
     private val dao = PreInstallDatabase.get(application).referrerDao()
@@ -16,7 +16,7 @@ class PreInstall(
             .toJson(listDataParams)
             .let { HashUtils.hmac(it, mediaSource) }
             .let { appsFlyerService.preload(it, listDataParams) }
-            .also { result(it) }
+            .also { result?.invoke(it) }
             .filter { it.status == "success" }
             .forEach { dao.insert(it) }
     }
