@@ -5,7 +5,7 @@ import com.google.gson.Gson
 
 class PreInstall(
     application: Application,
-    private val result: ((List<PreInstallEntity>) -> Unit)?,
+    private val result: ((List<PreInstallEntity>) -> Unit)? = null,
     private val mediaSource: String
 ) {
     private val dao = PreInstallDatabase.get(application).referrerDao()
