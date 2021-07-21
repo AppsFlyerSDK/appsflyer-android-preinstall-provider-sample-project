@@ -2,6 +2,7 @@ package com.appsflyer.oem
 
 import android.app.Application
 import com.google.gson.Gson
+import kotlinx.coroutines.runBlocking
 
 class PreInstall(
     application: Application,
@@ -20,4 +21,6 @@ class PreInstall(
             .filter { it.status == "success" }
             .forEach { dao.insert(it) }
     }
+
+    fun addSync(listDataParams: List<DataParams>) = runBlocking { add(listDataParams) }
 }
