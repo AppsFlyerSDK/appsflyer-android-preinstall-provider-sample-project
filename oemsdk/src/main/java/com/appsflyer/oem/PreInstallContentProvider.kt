@@ -4,8 +4,6 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.MatrixCursor
 import android.net.Uri
-import android.os.Binder
-import android.os.Build
 
 class PreInstallContentProvider : ContentProvider() {
     private lateinit var dao: PreInstallDao
@@ -20,13 +18,13 @@ class PreInstallContentProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<String>?,
         sortOrder: String?
-    ) = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) callingPackage
-    else context!!.packageManager.getNameForUid(Binder.getCallingUid()))!!
-        .let { dao.select(it) }
-        ?.let { arrayOf(it.preloadId) }
+    ) = callingPackage!!
+        .let(dao::select)
+        ?.preloadId
+        ?.let { arrayOf(it) }
         ?.let { array ->
             arrayOf(PreInstallEntity.KEY_PRELOAD_ID)
-                .let { MatrixCursor(it) }
+                .let(::MatrixCursor)
                 .also { it.addRow(array) }
         }
 
