@@ -12,7 +12,6 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.net.URL
-import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
@@ -28,10 +27,10 @@ class PreInstallTest {
         val server = MockWebServer()
             .also { server ->
                 PreInstallEntity(appId, preloadId, "success")
-                    .let { listOf(it) }
-                    .let { Gson().toJson(it) }
-                    .let { MockResponse().setBody(it) }
-                    .let { server.enqueue(it) }
+                    .let(::listOf)
+                    .let(Gson()::toJson)
+                    .let(MockResponse()::setBody)
+                    .let(server::enqueue)
             }
         ApiModule.preload = server.url(URL(ApiModule.preload).path).toString()
         val application = ApplicationProvider.getApplicationContext<Application>()
@@ -42,10 +41,9 @@ class PreInstallTest {
         val listDataParams =
             listOf(DataParams(mediaSource, installTime, appId, campaign, campaignId))
         val bodyExpected = Gson().toJson(listDataParams)
-        val callbacks = LinkedBlockingQueue<List<PreInstallEntity>>()
         runBlocking {
-            PreInstall(application, { callbacks.offer(it) }, mediaSource).add(listDataParams)
-        }
+            PreInstall(application, mediaSource).add(listDataParams)
+        }.forEach { Assert.assertEquals("success", it.status) }
         server
             .takeRequest(TIMEOUT, TimeUnit.SECONDS)
             .let { request ->
@@ -55,9 +53,6 @@ class PreInstallTest {
                 val authorizationExpected = HashUtils.hmac(bodyExpected, mediaSource)
                 Assert.assertEquals(authorizationExpected, authorizationActual)
             }
-        callbacks.poll(TIMEOUT, TimeUnit.SECONDS)
-            .forEach { Assert.assertEquals("success", it.status) }
-        callbacks.isEmpty().let { Assert.assertTrue(it) }
         Intent("com.appsflyer.oem.PRELOAD_PROVIDER")
             .let { application.packageManager.queryIntentContentProviders(it, 0) }
             .first()
