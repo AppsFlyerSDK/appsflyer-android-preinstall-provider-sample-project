@@ -17,7 +17,8 @@ class PreInstall(application: Application, private val mediaSource: String) {
             .let { HashUtils.hmac(it, mediaSource) }
             .let { appsFlyerService.preload(it, listDataParams) }
             .also { preInstalls ->
-                preInstalls.filter { it.status == "success" }
+                preInstalls
+                    .filter { it.status == "success" }
                     .forEach { dao.insert(it) }
             }
 
