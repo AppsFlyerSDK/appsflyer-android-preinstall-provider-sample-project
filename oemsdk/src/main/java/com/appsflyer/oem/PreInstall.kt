@@ -4,13 +4,13 @@ import android.app.Application
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import java.io.IOException
-import kotlin.jvm.Throws
 
 class PreInstall(application: Application, private val mediaSource: String) {
     private val dao = PreInstallDatabase.get(application).referrerDao()
     private val appsFlyerService = ApiModule.appsFlyerService()
 
-    @Throws(IOException::class) // todo should we catch exceptions?
+    /** be sure to handle IOExceptions */
+    @Throws(IOException::class)
     suspend fun add(listDataParams: List<DataParams>) =
         Gson()
             .toJson(listDataParams)
@@ -22,6 +22,7 @@ class PreInstall(application: Application, private val mediaSource: String) {
                     .forEach { dao.insert(it) }
             }
 
+    /** be sure to handle IOExceptions */
     @Throws(IOException::class)
     fun addSync(listDataParams: List<DataParams>) = runBlocking { add(listDataParams) }
 }
