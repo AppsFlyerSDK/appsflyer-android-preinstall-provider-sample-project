@@ -11,11 +11,11 @@ class PreInstall(application: Application, private val mediaSource: String) {
 
     /** be sure to handle IOExceptions */
     @Throws(IOException::class)
-    suspend fun add(listDataParams: List<DataParams>) =
+    suspend fun add(vararg info: PreInstallInfo) =
         Gson()
-            .toJson(listDataParams)
+            .toJson(info)
             .let { HashUtils.hmac(it, mediaSource) }
-            .let { appsFlyerService.preload(it, listDataParams) }
+            .let { appsFlyerService.preload(it, *info) }
             .also { preInstalls ->
                 preInstalls
                     .filter { it.status == "success" }
@@ -24,5 +24,5 @@ class PreInstall(application: Application, private val mediaSource: String) {
 
     /** be sure to handle IOExceptions */
     @Throws(IOException::class)
-    fun addSync(listDataParams: List<DataParams>) = runBlocking { add(listDataParams) }
+    fun addSync(vararg info: PreInstallInfo) = runBlocking { add(*info) }
 }

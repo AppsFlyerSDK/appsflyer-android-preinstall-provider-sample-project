@@ -26,7 +26,7 @@ class PreInstallTest {
         val preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
         val server = MockWebServer()
             .also { server ->
-                PreInstallEntity(appId, preloadId, "success")
+                PreInstallId(appId, preloadId, "success")
                     .let(::listOf)
                     .let(Gson()::toJson)
                     .let(MockResponse()::setBody)
@@ -38,11 +38,11 @@ class PreInstallTest {
         val campaign = "euro2020"
         val installTime = System.currentTimeMillis()
         val campaignId = "final"
-        val listDataParams =
-            listOf(DataParams(mediaSource, installTime, appId, campaign, campaignId))
+        val listDataParams = PreInstallInfo(mediaSource, installTime, appId, campaign, campaignId)
+            .let { arrayOf(it) }
         val bodyExpected = Gson().toJson(listDataParams)
         runBlocking {
-            PreInstall(application, mediaSource).add(listDataParams)
+            PreInstall(application, mediaSource).add(*listDataParams)
         }.forEach { Assert.assertEquals("success", it.status) }
         server
             .takeRequest(TIMEOUT, TimeUnit.SECONDS)
@@ -69,7 +69,7 @@ class PreInstallTest {
                 )
             }!!.let { cursor ->
                 cursor.moveToFirst()
-                cursor.getString(cursor.getColumnIndex(PreInstallEntity.KEY_PRELOAD_ID))
+                cursor.getString(cursor.getColumnIndex(PreInstallId.KEY_PRELOAD_ID))
                     .let { Assert.assertEquals(preloadId, it) }
             }
     }

@@ -23,7 +23,7 @@ class PreInstallContentProvider : ContentProvider() {
         ?.preloadId
         ?.let { arrayOf(it) }
         ?.let { array ->
-            arrayOf(PreInstallEntity.KEY_PRELOAD_ID)
+            arrayOf(PreInstallId.KEY_PRELOAD_ID)
                 .let(::MatrixCursor)
                 .also { it.addRow(array) }
         }

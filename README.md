@@ -1,51 +1,25 @@
 <img src="https://www.appsflyer.com/wp-content/uploads/2016/11/logo-1.svg"  width="450">
 
-# WIP: appsflyer-android-preload-client
-
-AppsFlyer Preload (OEM) Client will store app information into Content Provider using the following path:
-
-```
-content://com.appsflyer.oemclient/<HASHED_APP_ID>/preload_id
-```
-
-Where `<HASHED_APP_ID>` is a package name hashed by `SHA256`.
-
-For example, if the app_id is `"com.my.app"`, the path would be:
-```
-content://com.appsflyer.oemclient/252a30a2adf5ab9a340796ef38341e9a424a199a13a6f5dd2149c6503480c92f/preload_id
-```
+# appsflyer-android-preload-client
 #### Content Provider data structure
-
 Column|   Type | Description
 ---   |   ---  | ----
-`0`   | String |  preload id
-
-
+`0`   | String |  preload_id
 ### API
-
-```java
-public class com.appsflyer.oem.AppsFlyerOEMClient
+```kotlin
+class PreInstall
 ```
-A main class used to create an interface between OEM and AppsFlyer OEM Client. It is a singleton.
-
-#### Methods:
-
-```java
-public static AppsFlyerOEMClient getInstance()
-```
-Returns an instance of AppsFlyerOEMClient.
-
-```java
-public void setPartnerUniqueIdentifier(String pid)
+A main class used to create an interface between OEM and AppsFlyer OEM Client.
+```kotlin
+class PreInstall(application: Application, private val mediaSource: String)
 ```
 The partner unique identifier
 
-```java
-public void addPackage(String packageName, long installTimeStamp, org.json.JSONObject data)
+```kotlin
+@Throws(IOException::class)
+suspend fun add(vararg info: PreInstallInfo): List<PreInstallId>
 ```
-- `packageName` - the app identifier. For example, com.my.app
-- `installTimeStamp` -  Timestamp representing the install time  (Epoch in milliseconds)
-- `data` - the object contains attribution parameters. 
+- `info` - the object contains attribution parameters. 
 
 
 
@@ -66,50 +40,17 @@ public void addPackage(String packageName, long installTimeStamp, org.json.JSONO
 | af\_channel      | The media source channel through which the ads are distributed, e.g., UAC\_Search, UAC\_Display, Instagram, Facebook Audience Network etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | String                                | No        |
 | af\_sub\[n\]<br>(n=1-5) example: af\_sub1 | Optional custom parameter defined by the advertiser.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | String                                | No        |
 
+An class that returns the information about processing preload.
 
-
-```java
-public void registerPreload(com.appsflyer.oem.PreloadStateListener)
+```kotlin
+class PreInstallId
 ```
-This method will trigger the AppsFlyer OEM Client main flow.
+Response:
 
-```java
-public interface com.appsflyer.oem.PreloadStateListener
-```
-An interface that returns the information about processing preload.
+Name            | Description
+---             | ----
+`app_id`        | "com.appsflyer.game"
+`preload_id`    | "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
+`status`        | "success" or "failure"
 
-```java
-public void onPreloadSetupFinished(int responseCode)
-```
-Response Codes:
-
-Name |   Code | Description
----   |   ---  | ----
-`OK`   | 0 |  Success
-`DEVELOPER_ERROR`   | 1 |  General errors caused by incorrect usage
-`SERVICE_ERROR`   | 2 |  The error returned from AppsFlyer servers
-
-Java Example:
-
-```java
-JSONObject dataOne = new JSONObject();
-dataOne.put("af_c_id", "campaign_id_1");
-dataOne.put("campaign", "campaign_name_1");
-
-JSONObject dataTwo = new JSONObject();
-// ...
-
-AppsFlyerOEMClient.getInstance().
-   setPartnerUniqueIdentifier("partner_int").
-   addPackage("com.my.app1",  1606657869005, dataOne).
-   addPackage("com.my.app2",  1606657869005, dataTwo).
-   registerPreload(new PreloadStateListener() {
-      @Override
-      public void onPreloadSetupFinished(int responseCode) {
-        // handle the response code
-      }
-}); 
-```
-
-
-
+[Example](/oemsdk/src/androidTest/java/PreInstallTest.kt)

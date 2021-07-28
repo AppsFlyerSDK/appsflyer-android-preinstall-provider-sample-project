@@ -1,5 +1,4 @@
-package com.appsflyer.oem
-
+import com.appsflyer.oem.HashUtils
 import org.junit.Assert
 import org.junit.Test
 

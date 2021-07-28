@@ -7,9 +7,9 @@ import androidx.room.Query
 
 @Dao
 interface PreInstallDao {
-    @Query("SELECT * from PreInstallEntity where appId = :appId")
-    fun select(appId: String): PreInstallEntity?
+    @Query("SELECT * from PreInstallId where appId = :appId")
+    fun select(appId: String): PreInstallId?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(referrer: PreInstallEntity)
+    suspend fun insert(referrer: PreInstallId)
 }

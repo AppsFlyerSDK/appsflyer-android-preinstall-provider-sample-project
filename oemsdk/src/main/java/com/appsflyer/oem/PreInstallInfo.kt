@@ -2,7 +2,7 @@ package com.appsflyer.oem
 
 import com.google.gson.annotations.SerializedName
 
-class DataParams(
+class PreInstallInfo(
     @SerializedName("pid")
     val mediaSource: String,
     @SerializedName("install_time")

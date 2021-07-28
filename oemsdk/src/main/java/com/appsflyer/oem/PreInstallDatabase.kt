@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [PreInstallEntity::class], version = 4)
+@Database(entities = [PreInstallId::class], version = 4)
 abstract class PreInstallDatabase : RoomDatabase() {
     companion object {
         private var instance: PreInstallDatabase? = null

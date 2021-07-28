@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 @Entity
-class PreInstallEntity(
+class PreInstallId(
     @PrimaryKey
     @SerializedName(KEY_APP_ID)
     val appId: String,
