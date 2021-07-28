@@ -38,12 +38,10 @@ class PreInstallTest {
         val campaign = "euro2020"
         val installTime = System.currentTimeMillis()
         val campaignId = "final"
-        val listDataParams = PreInstallInfo(mediaSource, installTime, appId, campaign, campaignId)
-            .let { arrayOf(it) }
-        val bodyExpected = Gson().toJson(listDataParams)
-        runBlocking {
-            PreInstall(application, mediaSource).add(*listDataParams)
-        }.forEach { Assert.assertEquals("success", it.status) }
+        val info = PreInstallInfo(mediaSource, installTime, appId, campaign, campaignId)
+        val bodyExpected = info.let(::listOf).let(Gson()::toJson)
+        runBlocking { PreInstall(application, mediaSource).add(info) }
+            .forEach { Assert.assertEquals("success", it.status) }
         server
             .takeRequest(TIMEOUT, TimeUnit.SECONDS)
             .let { request ->
