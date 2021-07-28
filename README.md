@@ -1,4 +1,4 @@
-<img src="https://www.appsflyer.com/wp-content/uploads/2016/11/logo-1.svg"  width="450">
+<img src="https://massets.appsflyer.com/wp-content/uploads/2019/05/21152710/logo.png"  width="450">
 
 # appsflyer-android-preload-client
 #### Content Provider data structure
