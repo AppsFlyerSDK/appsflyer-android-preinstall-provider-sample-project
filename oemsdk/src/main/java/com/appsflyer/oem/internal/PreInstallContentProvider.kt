@@ -1,11 +1,12 @@
-package com.appsflyer.oem
+package com.appsflyer.oem.internal
 
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.MatrixCursor
 import android.net.Uri
+import com.appsflyer.oem.PreInstallId
 
-class PreInstallContentProvider : ContentProvider() {
+internal class PreInstallContentProvider : ContentProvider() {
     private lateinit var dao: PreInstallDao
     override fun onCreate(): Boolean {
         dao = PreInstallDatabase.get(context!!).referrerDao()

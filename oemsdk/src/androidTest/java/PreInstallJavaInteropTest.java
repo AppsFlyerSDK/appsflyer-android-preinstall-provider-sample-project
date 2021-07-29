@@ -3,7 +3,7 @@ import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.appsflyer.oem.ApiModule;
+import com.appsflyer.oem.internal.ApiModule;
 import com.appsflyer.oem.BuildConfig;
 import com.appsflyer.oem.PreInstallInfo;
 import com.appsflyer.oem.PreInstall;

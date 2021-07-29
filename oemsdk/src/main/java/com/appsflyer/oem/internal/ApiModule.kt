@@ -1,4 +1,4 @@
-package com.appsflyer.oem
+package com.appsflyer.oem.internal
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

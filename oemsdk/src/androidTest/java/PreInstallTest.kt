@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.appsflyer.oem.*
+import com.appsflyer.oem.internal.ApiModule
+import com.appsflyer.oem.internal.HashUtils
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse

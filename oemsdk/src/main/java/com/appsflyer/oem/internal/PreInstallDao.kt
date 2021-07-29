@@ -1,12 +1,13 @@
-package com.appsflyer.oem
+package com.appsflyer.oem.internal
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.appsflyer.oem.PreInstallId
 
 @Dao
-interface PreInstallDao {
+internal interface PreInstallDao {
     @Query("SELECT * from PreInstallId where appId = :appId")
     fun select(appId: String): PreInstallId?
 

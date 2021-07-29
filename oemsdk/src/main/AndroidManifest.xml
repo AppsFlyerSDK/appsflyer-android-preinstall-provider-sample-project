@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application>
         <provider
-            android:name=".PreInstallContentProvider"
+            android:name=".internal.PreInstallContentProvider"
             android:authorities="${applicationId}.provider"
             android:exported="true"
             tools:ignore="ExportedContentProvider">
