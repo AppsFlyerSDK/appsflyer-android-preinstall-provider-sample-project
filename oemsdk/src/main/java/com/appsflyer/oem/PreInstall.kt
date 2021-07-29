@@ -3,14 +3,15 @@ package com.appsflyer.oem
 import android.app.Application
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
+import retrofit2.HttpException
 import java.io.IOException
 
 class PreInstall(application: Application, private val mediaSource: String) {
     private val dao = PreInstallDatabase.get(application).referrerDao()
     private val appsFlyerService = ApiModule.appsFlyerService()
 
-    /** be sure to handle IOExceptions */
-    @Throws(IOException::class)
+    /** be sure to handle Exceptions */
+    @Throws(IOException::class, HttpException::class)
     suspend fun add(vararg info: PreInstallInfo) =
         Gson()
             .toJson(info)
@@ -22,7 +23,7 @@ class PreInstall(application: Application, private val mediaSource: String) {
                     .forEach { dao.insert(it) }
             }
 
-    /** be sure to handle IOExceptions */
-    @Throws(IOException::class)
+    /** be sure to handle Exceptions */
+    @Throws(IOException::class, HttpException::class)
     fun addSync(vararg info: PreInstallInfo) = runBlocking { add(*info) }
 }

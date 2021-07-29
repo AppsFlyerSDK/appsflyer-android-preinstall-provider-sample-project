@@ -1,6 +1,9 @@
 <img src="https://massets.appsflyer.com/wp-content/uploads/2019/05/21152710/logo.png"  width="450">
 
-# appsflyer-android-preload-client
+# Pre install SDK
+
+SDK fetches ids from appsflyer backend for pre-install attribution
+
 #### Content Provider data structure
 Column|   Type | Description
 ---   |   ---  | ----
