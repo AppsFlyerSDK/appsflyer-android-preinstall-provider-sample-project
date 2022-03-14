@@ -7,14 +7,14 @@ SDK fetches ids from appsflyer backend for pre-install attribution
 #### Content Provider data structure
 Column|   Type | Description
 ---   |   ---  | ----
-`0`   | String |  preload_id
+`0`   | String |  transaction_id
 ### API
 ```kotlin
-class PreInstall
+class PreInstallClient
 ```
 A main class used to create an interface between OEM and AppsFlyer OEM Client.
 ```kotlin
-class PreInstall(application: Application, private val mediaSource: String)
+class PreInstallClient(application: Application, private val mediaSource: String)
 ```
 The partner unique identifier
 
@@ -28,6 +28,7 @@ suspend fun add(vararg info: PreInstallInfo): List<PreInstallId>
 
 | Field Name| Description| Type| Mandatory |
 | ---| --- | ------------------------------------- | --------- |
+| interaction\_type                              | Type of the preinstall flow (`preload` or `click_to_download`)
 | pid                                            | Partner unique identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | String                                | Yes       |
 | install\_time                                  | Timestamp representing the install time                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Epoch timestamp - long (milliseconds) | Yes       |
 | app\_id                                        | Application unique identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | String                                | Yes       |
@@ -50,10 +51,10 @@ class PreInstallId
 ```
 Response:
 
-Name            | Description
----             | ----
-`app_id`        | "com.appsflyer.game"
-`preload_id`    | "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
-`status`        | "success" or "failure"
+Name                | Description
+---                 | ----
+`app_id`            | "com.appsflyer.game"
+`transaction_id`    | "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
+`status`            | "success" or "failure"
 
 [Example](/oemsdk/src/androidTest/java/PreInstallTest.kt)

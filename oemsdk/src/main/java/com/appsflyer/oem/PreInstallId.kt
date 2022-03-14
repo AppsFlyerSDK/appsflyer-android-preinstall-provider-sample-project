@@ -10,7 +10,7 @@ class PreInstallId(
     @SerializedName(KEY_APP_ID)
     val appId: String,
     @SerializedName(KEY_TRANSACTION_ID)
-    val preloadId: String,
+    val transactionId: String,
     val status: String?
 ) {
     companion object {

@@ -65,8 +65,8 @@ public class PreInstallClientJavaInteropTest {
                 null);
         PreInstallClient preInstallClient = new PreInstallClient(application, mediaSource);
         List<PreInstallId> preInstallsActual = preInstallClient.addSync(preInstallInfo);
-        Assert.assertEquals(preInstallsExpected.get(0).getPreloadId(),
-                preInstallsActual.get(0).getPreloadId());
+        Assert.assertEquals(preInstallsExpected.get(0).getTransactionId(),
+                preInstallsActual.get(0).getTransactionId());
     }
 
     @Test(expected = IOException.class)

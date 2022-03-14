@@ -21,7 +21,7 @@ internal class PreInstallContentProvider : ContentProvider() {
         sortOrder: String?
     ) = callingPackage!!
         .let(dao::select)
-        ?.preloadId
+        ?.transactionId
         ?.let { arrayOf(it) }
         ?.let { preloadIds ->
             MatrixCursor(arrayOf(PreInstallId.KEY_TRANSACTION_ID))
