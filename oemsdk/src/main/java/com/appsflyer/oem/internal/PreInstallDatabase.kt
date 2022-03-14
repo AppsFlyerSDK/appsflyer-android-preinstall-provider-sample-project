@@ -12,11 +12,11 @@ internal abstract class PreInstallDatabase : RoomDatabase() {
         private var instance: PreInstallDatabase? = null
         fun get(context: Context): PreInstallDatabase {
             if (instance == null) instance =
-                Room.databaseBuilder(context, PreInstallDatabase::class.java, "referrer_database")
+                Room.databaseBuilder(context, PreInstallDatabase::class.java, "preinstall_database")
                     .build()
             return instance as PreInstallDatabase
         }
     }
 
-    abstract fun referrerDao(): PreInstallDao
+    abstract fun preInstallDao(): PreInstallDao
 }

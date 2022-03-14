@@ -9,19 +9,19 @@ import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import java.io.IOException
 
-class PreInstall(application: Application, private val mediaSource: String) {
-    private val dao = PreInstallDatabase.get(application).referrerDao()
+class PreInstallClient(application: Application, private val mediaSource: String) {
+    private val dao = PreInstallDatabase.get(application).preInstallDao()
     private val appsFlyerService = ApiModule.appsFlyerService()
 
     /** be sure to handle Exceptions */
     @Throws(IOException::class, HttpException::class)
-    suspend fun add(vararg info: PreInstallInfo) =
+    suspend fun add(vararg infos: PreInstallInfo) =
         Gson()
-            .toJson(info)
+            .toJson(infos)
             .let { HashUtils.hmac(it, mediaSource) }
-            .let { appsFlyerService.preload(it, *info) }
-            .also { preInstalls ->
-                preInstalls
+            .let { appsFlyerService.registerPreinstalls(authorization = it, preInstallInfos = infos) }
+            .also { preInstallIds ->
+                preInstallIds
                     .filter { it.status == "success" }
                     .forEach { dao.insert(it) }
             }

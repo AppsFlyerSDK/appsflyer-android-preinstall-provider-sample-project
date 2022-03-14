@@ -9,7 +9,7 @@ import com.appsflyer.oem.PreInstallId
 internal class PreInstallContentProvider : ContentProvider() {
     private lateinit var dao: PreInstallDao
     override fun onCreate(): Boolean {
-        dao = PreInstallDatabase.get(context!!).referrerDao()
+        dao = PreInstallDatabase.get(context!!).preInstallDao()
         return true
     }
 
