@@ -1,8 +1,11 @@
 package com.appsflyer.oem
 
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 class PreInstallInfo(
+    @SerializedName("interaction_type")
+    val interactionType: InteractionType,
     @SerializedName("pid")
     val mediaSource: String,
     @SerializedName("install_time")
@@ -44,5 +47,12 @@ class PreInstallInfo(
     @SerializedName("af_sub4")
     val custom4: String? = null,
     @SerializedName("af_sub5")
-    val custom5: String? = null
-)
+    val custom5: String? = null,
+) {
+    @SerializedName("request_id")
+    private val requestId = UUID.randomUUID().toString()
+}
+
+enum class InteractionType {
+    PRELOAD, CLICK_TO_DOWNLOAD
+}

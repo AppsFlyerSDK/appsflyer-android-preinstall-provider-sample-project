@@ -23,10 +23,9 @@ internal class PreInstallContentProvider : ContentProvider() {
         .let(dao::select)
         ?.preloadId
         ?.let { arrayOf(it) }
-        ?.let { array ->
-            arrayOf(PreInstallId.KEY_PRELOAD_ID)
-                .let(::MatrixCursor)
-                .also { it.addRow(array) }
+        ?.let { preloadIds ->
+            MatrixCursor(arrayOf(PreInstallId.KEY_TRANSACTION_ID))
+                .apply { addRow(preloadIds) }
         }
 
     override fun getType(uri: Uri): Nothing? = null

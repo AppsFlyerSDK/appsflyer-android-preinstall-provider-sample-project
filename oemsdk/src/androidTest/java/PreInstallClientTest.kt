@@ -19,7 +19,7 @@ import java.net.URL
 import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
-class PreInstallTest {
+class PreInstallClientTest {
     companion object {
         const val TIMEOUT = 4L
     }
@@ -36,31 +36,38 @@ class PreInstallTest {
                     .let(MockResponse()::setBody)
                     .let(server::enqueue)
             }
-        ApiModule.preload = server.url(URL(ApiModule.preload).path).toString()
+        ApiModule.preloadUrl = server.url(URL(ApiModule.preloadUrl).path).toString()
         val application = ApplicationProvider.getApplicationContext<Application>()
         val mediaSource = "nexus"
         val campaign = "euro2020"
         val installTime = System.currentTimeMillis()
         val campaignId = "final"
-        val info = PreInstallInfo(mediaSource, installTime, appId, campaign, campaignId)
+        val info = PreInstallInfo(
+            interactionType = InteractionType.PRELOAD,
+            mediaSource = mediaSource,
+            installTime = installTime,
+            appId = appId,
+            campaign = campaign,
+            campaignId = campaignId
+        )
         val bodyExpected = info.let(::listOf).let(Gson()::toJson)
-        runBlocking { PreInstall(application, mediaSource).add(info) }
+        runBlocking { PreInstallClient(application, mediaSource).add(info) }
             .forEach { Assert.assertEquals("success", it.status) }
         server
             .takeRequest(TIMEOUT, TimeUnit.SECONDS)
             .let { request ->
-                val bodyActual = request.body.readUtf8()
+                val bodyActual = request!!.body.readUtf8()
                 Assert.assertEquals(bodyExpected, bodyActual)
                 val authorizationActual = request.getHeader("Authorization")
                 val authorizationExpected = HashUtils.hmac(bodyExpected, mediaSource)
                 Assert.assertEquals(authorizationExpected, authorizationActual)
             }
-        Intent("com.appsflyer.oem.PRELOAD_PROVIDER")
+        Intent("com.appsflyer.referrer.INSTALL_PROVIDER")
             .let { application.packageManager.queryIntentContentProviders(it, 0) }
             .first()
             .providerInfo
             .authority
-            .let { Uri.parse("content://$it/preload_id") }
+            .let { Uri.parse("content://$it/transaction_id") }
             .let {
                 application.contentResolver.query(
                     it,
@@ -71,7 +78,7 @@ class PreInstallTest {
                 )
             }!!.let { cursor ->
                 cursor.moveToFirst()
-                cursor.getString(cursor.getColumnIndex(PreInstallId.KEY_PRELOAD_ID))
+                cursor.getString(cursor.getColumnIndex(PreInstallId.KEY_TRANSACTION_ID))
                     .let { Assert.assertEquals(preloadId, it) }
             }
     }
@@ -92,14 +99,21 @@ class PreInstallTest {
                     }
                     .let(server::enqueue)
             }
-        ApiModule.preload = server.url(URL(ApiModule.preload).path).toString()
+        ApiModule.preloadUrl = server.url(URL(ApiModule.preloadUrl).path).toString()
         val application = ApplicationProvider.getApplicationContext<Application>()
         val mediaSource = "nexus"
         val campaign = "euro2020"
         val installTime = System.currentTimeMillis()
         val campaignId = "final"
-        val info = PreInstallInfo(mediaSource, installTime, appId, campaign, campaignId)
-        runBlocking { PreInstall(application, mediaSource).add(info) }
+        val info = PreInstallInfo(
+            interactionType = InteractionType.PRELOAD,
+            mediaSource = mediaSource,
+            installTime = installTime,
+            appId = appId,
+            campaign = campaign,
+            campaignId = campaignId
+        )
+        runBlocking { PreInstallClient(application, mediaSource).add(info) }
             .forEach { Assert.assertEquals("success", it.status) }
     }
 }
