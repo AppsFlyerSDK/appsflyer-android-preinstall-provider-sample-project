@@ -19,11 +19,22 @@ class PreInstallClient(application: Application, private val mediaSource: String
         Gson()
             .toJson(infos)
             .let { HashUtils.hmac(it, mediaSource) }
-            .let { appsFlyerService.registerPreinstalls(authorization = it, preInstallInfos = infos) }
-            .also { preInstallIds ->
-                preInstallIds
-                    .filter { it.status == "success" }
-                    .forEach { dao.insert(it) }
+            .let { authToken ->
+                val infosByAppId = infos.groupBy { it.appId }
+                val appIds = infosByAppId.keys
+                for (appId in appIds) {
+                    infosByAppId[appId]?.let { infosForAppId ->
+                        appsFlyerService.registerPreinstalls(
+                            authorization = authToken,
+                            appId = appId,
+                            preInstallInfos = infosForAppId.toTypedArray()
+                        ).also { preInstallIds ->
+                            preInstallIds
+                                .filter { it.status == "success" }
+                                .forEach { dao.insert(it) }
+                        }
+                    }
+                }
             }
 
     /** be sure to handle Exceptions */

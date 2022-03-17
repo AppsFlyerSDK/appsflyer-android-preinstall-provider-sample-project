@@ -25,7 +25,9 @@ internal class PreInstallContentProvider : ContentProvider() {
         ?.let { arrayOf(it) }
         ?.let { preloadIds ->
             MatrixCursor(arrayOf(PreInstallId.KEY_TRANSACTION_ID))
-                .apply { addRow(preloadIds) }
+                .apply {
+                    addRow(preloadIds)
+                }
         }
 
     override fun getType(uri: Uri): Nothing? = null
