@@ -24,6 +24,7 @@ class PreInstallClientTest {
         const val TIMEOUT = 4L
     }
 
+    // TODO: test multiple appIds
     @Test
     fun success() {
         val appId = BuildConfig.LIBRARY_PACKAGE_NAME + ".test"
@@ -43,12 +44,12 @@ class PreInstallClientTest {
         val installTime = System.currentTimeMillis()
         val campaignId = "final"
         val info = PreInstallInfo(
-            interactionType = InteractionType.PRELOAD,
+            engagementType = EngagementType.PRELOAD,
             mediaSource = mediaSource,
             installTime = installTime,
             appId = appId,
-            campaign = campaign,
-            campaignId = campaignId
+            campaignName = campaign,
+            campaignId = campaignId,
         )
         val bodyExpected = info.let(::listOf).let(Gson()::toJson)
         runBlocking { PreInstallClient(application, mediaSource).add(info) }
@@ -106,11 +107,11 @@ class PreInstallClientTest {
         val installTime = System.currentTimeMillis()
         val campaignId = "final"
         val info = PreInstallInfo(
-            interactionType = InteractionType.PRELOAD,
+            engagementType = EngagementType.PRELOAD,
             mediaSource = mediaSource,
             installTime = installTime,
             appId = appId,
-            campaign = campaign,
+            campaignName = campaign,
             campaignId = campaignId
         )
         runBlocking { PreInstallClient(application, mediaSource).add(info) }

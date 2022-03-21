@@ -3,7 +3,7 @@ import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.appsflyer.oem.InteractionType;
+import com.appsflyer.oem.EngagementType;
 import com.appsflyer.oem.internal.ApiModule;
 import com.appsflyer.oem.BuildConfig;
 import com.appsflyer.oem.PreInstallInfo;
@@ -41,12 +41,14 @@ public class PreInstallClientJavaInteropTest {
         ApiModule.INSTANCE.setPreloadUrl(preloadLocal);
         String mediaSource = "nexus";
         PreInstallInfo preInstallInfo = new PreInstallInfo(
-                InteractionType.PRELOAD,
+                EngagementType.PRELOAD,
                 mediaSource,
                 System.currentTimeMillis(),
                 appId,
                 "euro2020",
                 "final",
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -74,11 +76,13 @@ public class PreInstallClientJavaInteropTest {
         Application application = ApplicationProvider.getApplicationContext();
         String appId = BuildConfig.LIBRARY_PACKAGE_NAME + ".test";
         String mediaSource = "nexus";
-        PreInstallInfo preInstallInfo = new PreInstallInfo(InteractionType.PRELOAD, mediaSource,
+        PreInstallInfo preInstallInfo = new PreInstallInfo(EngagementType.PRELOAD, mediaSource,
                 System.currentTimeMillis(),
                 appId,
                 "euro2020",
                 "final",
+                null,
+                null,
                 null,
                 null,
                 null,
