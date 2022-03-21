@@ -7,6 +7,10 @@ import android.net.Uri
 import com.appsflyer.oem.PreInstallId
 
 internal class PreInstallContentProvider : ContentProvider() {
+    companion object {
+        // For testing purposes
+        var delayMillis = 0L
+    }
     private lateinit var dao: PreInstallDao
     override fun onCreate(): Boolean {
         dao = PreInstallDatabase.get(context!!).preInstallDao()
@@ -24,6 +28,8 @@ internal class PreInstallContentProvider : ContentProvider() {
         ?.transactionId
         ?.let { arrayOf(it) }
         ?.let { preloadIds ->
+            // For testing purposes
+            Thread.sleep(delayMillis)
             MatrixCursor(arrayOf(PreInstallId.KEY_TRANSACTION_ID))
                 .apply {
                     addRow(preloadIds)
