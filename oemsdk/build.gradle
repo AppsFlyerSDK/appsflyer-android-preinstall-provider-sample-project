@@ -5,9 +5,6 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.github.appsFlyersdk'
-version = '1.1'
-
 android {
     compileSdkVersion 32
     defaultConfig {
@@ -26,6 +23,15 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    afterEvaluate {
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    from components.release
+                }
+            }
+        }
     }
     kotlinOptions.jvmTarget = '1.8'
     testOptions.unitTests.includeAndroidResources = true
