@@ -3,10 +3,11 @@ import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.appsflyer.oem.EngagementType;
 import com.appsflyer.oem.internal.ApiModule;
 import com.appsflyer.oem.BuildConfig;
 import com.appsflyer.oem.PreInstallInfo;
-import com.appsflyer.oem.PreInstall;
+import com.appsflyer.oem.PreInstallClient;
 import com.appsflyer.oem.PreInstallId;
 import com.google.gson.Gson;
 
@@ -23,7 +24,7 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
 @RunWith(AndroidJUnit4.class)
-public class PreInstallJavaInteropTest {
+public class PreInstallClientJavaInteropTest {
     @Test
     public void compatibility() throws IOException {
         Application application = ApplicationProvider.getApplicationContext();
@@ -35,11 +36,13 @@ public class PreInstallJavaInteropTest {
         MockWebServer server = new MockWebServer();
         server.enqueue(new MockResponse().setBody(json));
         String preloadLocal = server
-                .url(new URL(ApiModule.INSTANCE.getPreload()).getPath())
+                .url(new URL(ApiModule.INSTANCE.getPreloadUrl()).getPath())
                 .toString();
-        ApiModule.INSTANCE.setPreload(preloadLocal);
+        ApiModule.INSTANCE.setPreloadUrl(preloadLocal);
         String mediaSource = "nexus";
-        PreInstallInfo preInstallInfo = new PreInstallInfo(mediaSource,
+        PreInstallInfo preInstallInfo = new PreInstallInfo(
+                EngagementType.PRELOAD,
+                mediaSource,
                 System.currentTimeMillis(),
                 appId,
                 "euro2020",
@@ -59,11 +62,13 @@ public class PreInstallJavaInteropTest {
                 null,
                 null,
                 null,
+                null,
+                null,
                 null);
-        PreInstall preInstall = new PreInstall(application, mediaSource);
-        List<PreInstallId> preInstallsActual = preInstall.addSync(preInstallInfo);
-        Assert.assertEquals(preInstallsExpected.get(0).getPreloadId(),
-                preInstallsActual.get(0).getPreloadId());
+        PreInstallClient preInstallClient = new PreInstallClient(application, mediaSource);
+        List<PreInstallId> preInstallsActual = preInstallClient.addSync(preInstallInfo);
+        Assert.assertEquals(preInstallsExpected.get(0).getTransactionId(),
+                preInstallsActual.get(0).getTransactionId());
     }
 
     @Test(expected = IOException.class)
@@ -71,7 +76,7 @@ public class PreInstallJavaInteropTest {
         Application application = ApplicationProvider.getApplicationContext();
         String appId = BuildConfig.LIBRARY_PACKAGE_NAME + ".test";
         String mediaSource = "nexus";
-        PreInstallInfo preInstallInfo = new PreInstallInfo(mediaSource,
+        PreInstallInfo preInstallInfo = new PreInstallInfo(EngagementType.PRELOAD, mediaSource,
                 System.currentTimeMillis(),
                 appId,
                 "euro2020",
@@ -91,8 +96,10 @@ public class PreInstallJavaInteropTest {
                 null,
                 null,
                 null,
+                null,
+                null,
                 null);
-        PreInstall preInstall = new PreInstall(application, mediaSource);
-        preInstall.addSync(preInstallInfo);
+        PreInstallClient preInstallClient = new PreInstallClient(application, mediaSource);
+        preInstallClient.addSync(preInstallInfo);
     }
 }
