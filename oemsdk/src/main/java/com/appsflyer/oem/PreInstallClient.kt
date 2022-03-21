@@ -22,6 +22,7 @@ class PreInstallClient(application: Application, private val mediaSource: String
             .let { authToken ->
                 val infosByAppId = infos.groupBy { it.appId }
                 val appIds = infosByAppId.keys
+                val addedIds = mutableListOf<PreInstallId>()
                 for (appId in appIds) {
                     infosByAppId[appId]?.let { infosForAppId ->
                         appsFlyerService.registerPreinstalls(
@@ -29,12 +30,14 @@ class PreInstallClient(application: Application, private val mediaSource: String
                             appId = appId,
                             preInstallInfos = infosForAppId.toTypedArray()
                         ).also { preInstallIds ->
+                            addedIds.addAll(preInstallIds)
                             preInstallIds
                                 .filter { it.status == "success" }
                                 .forEach { dao.insert(it) }
                         }
                     }
                 }
+                addedIds
             }
 
     /** be sure to handle Exceptions */
