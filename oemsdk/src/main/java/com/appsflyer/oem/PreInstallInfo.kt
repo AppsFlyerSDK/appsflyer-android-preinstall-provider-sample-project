@@ -64,8 +64,7 @@ class PreInstallInfo(
     @SerializedName("af_model")
     private val model = Build.MODEL
     @SerializedName("af_os_version")
-    private val version = Build.VERSION.SDK_INT
-
+    private val version = Build.VERSION.RELEASE
 }
 
 enum class EngagementType {
