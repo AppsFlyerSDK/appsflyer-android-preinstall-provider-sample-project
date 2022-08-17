@@ -31,14 +31,15 @@ class PreInstallContentProvider : ContentProvider() {
         selectionArgs: Array<String>?,
         sortOrder: String?
     ) : Cursor {
-        // for security reasons we should return to each app only data which belongs to it, so verify that
+        // for security reasons we should return to each app only data which belongs to it
+        // se here we verify app by the calling package
         val callingAppId = callingPackage!!
 
         // search in our internal db for the record of transaction ids
         val transactionId = dao.select(appId = callingAppId)?.transactionId
 
         val cursor = MatrixCursor(arrayOf(COLUMN_TRANSACTION_ID))
-        // if we have saved transation id - we send it to client, if not - cursor should be empty
+        // if we have saved transaction id - we send it to client, if not - cursor should be empty
         if (transactionId != null) {
             cursor.addRow(arrayOf(transactionId))
         }

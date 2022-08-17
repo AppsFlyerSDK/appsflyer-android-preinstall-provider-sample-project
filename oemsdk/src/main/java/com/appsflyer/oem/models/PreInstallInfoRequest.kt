@@ -4,7 +4,10 @@ import android.os.Build
 import com.google.gson.annotations.SerializedName
 import java.util.*
 
-class PreInstallInfo(
+/**
+ * The http request payload data class which is used to send attribution request in S2S flow.
+ */
+class PreInstallInfoRequest(
     @SerializedName("af_engagement_type")
     val engagementType: EngagementType,
     @SerializedName("af_media_source")

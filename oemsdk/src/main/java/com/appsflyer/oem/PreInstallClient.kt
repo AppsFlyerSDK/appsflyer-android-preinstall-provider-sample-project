@@ -4,6 +4,7 @@ import android.app.Application
 import com.appsflyer.oem.internal.ApiModule
 import com.appsflyer.oem.internal.HashUtils
 import com.appsflyer.oem.internal.PreInstallDatabase
+import com.appsflyer.oem.models.PreInstallId
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
@@ -15,14 +16,14 @@ class PreInstallClient(application: Application, private val mediaSource: String
 
     /** be sure to handle Exceptions */
     @Throws(IOException::class, HttpException::class)
-    suspend fun add(vararg infos: PreInstallInfo) =
+    suspend fun add(vararg infos: PreInstallInfoRequest) =
         Gson()
             .toJson(infos)
             .let { HashUtils.hmac(it, mediaSource) }
             .let { authToken ->
                 val infosByAppId = infos.groupBy { it.appId }
                 val appIds = infosByAppId.keys
-                val addedIds = mutableListOf<PreInstallIdEntity>()
+                val addedIds = mutableListOf<PreInstallId>()
                 for (appId in appIds) {
                     infosByAppId[appId]?.let { infosForAppId ->
                         appsFlyerService.registerPreinstalls(
@@ -42,5 +43,5 @@ class PreInstallClient(application: Application, private val mediaSource: String
 
     /** be sure to handle Exceptions */
     @Throws(IOException::class, HttpException::class)
-    fun addSync(vararg info: PreInstallInfo) = runBlocking { add(*info) }
+    fun addSync(vararg info: PreInstallInfoRequest) = runBlocking { add(*info) }
 }

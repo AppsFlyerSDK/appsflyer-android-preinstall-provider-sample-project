@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.appsflyer.oem.*
 import com.appsflyer.oem.internal.ApiModule
 import com.appsflyer.oem.internal.HashUtils
+import com.appsflyer.oem.models.PreInstallId
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
@@ -31,7 +32,7 @@ class PreInstallClientTest {
         val preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
         val server = MockWebServer()
             .also { server ->
-                PreInstallIdEntity(appId, preloadId, "success")
+                PreInstallId(appId, preloadId, "success")
                     .let(::listOf)
                     .let(Gson()::toJson)
                     .let(MockResponse()::setBody)
@@ -43,7 +44,7 @@ class PreInstallClientTest {
         val campaign = "euro2020"
         val installTime = System.currentTimeMillis()
         val campaignId = "final"
-        val info = PreInstallInfo(
+        val info = PreInstallInfoRequest(
             engagementType = EngagementType.PRELOAD,
             mediaSource = mediaSource,
             installTime = installTime,
@@ -79,7 +80,7 @@ class PreInstallClientTest {
                 )
             }!!.let { cursor ->
                 cursor.moveToFirst()
-                cursor.getString(cursor.getColumnIndex(PreInstallIdEntity.KEY_TRANSACTION_ID))
+                cursor.getString(cursor.getColumnIndex(PreInstallId.KEY_TRANSACTION_ID))
                     .let { Assert.assertEquals(preloadId, it) }
             }
     }
@@ -90,7 +91,7 @@ class PreInstallClientTest {
         val preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
         val server = MockWebServer()
             .also { server ->
-                PreInstallIdEntity(appId, preloadId, "success")
+                PreInstallId(appId, preloadId, "success")
                     .let(::listOf)
                     .let(Gson()::toJson)
                     .let {
@@ -106,7 +107,7 @@ class PreInstallClientTest {
         val campaign = "euro2020"
         val installTime = System.currentTimeMillis()
         val campaignId = "final"
-        val info = PreInstallInfo(
+        val info = PreInstallInfoRequest(
             engagementType = EngagementType.PRELOAD,
             mediaSource = mediaSource,
             installTime = installTime,
