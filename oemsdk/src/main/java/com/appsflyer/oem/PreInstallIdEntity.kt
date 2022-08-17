@@ -4,8 +4,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+/**
+ * This is the internal data base entity used to store received transaction ids from AppFlyer to be later served in the Content provider.
+ */
 @Entity
-class PreInstallId(
+class PreInstallIdEntity(
     @PrimaryKey
     @SerializedName(KEY_APP_ID)
     val appId: String,

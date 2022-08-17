@@ -8,7 +8,7 @@ import com.appsflyer.oem.internal.ApiModule;
 import com.appsflyer.oem.BuildConfig;
 import com.appsflyer.oem.PreInstallInfo;
 import com.appsflyer.oem.PreInstallClient;
-import com.appsflyer.oem.PreInstallId;
+import com.appsflyer.oem.PreInstallIdEntity;
 import com.google.gson.Gson;
 
 import org.junit.Assert;
@@ -30,8 +30,8 @@ public class PreInstallClientJavaInteropTest {
         Application application = ApplicationProvider.getApplicationContext();
         String appId = BuildConfig.LIBRARY_PACKAGE_NAME + ".test";
         String preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4";
-        PreInstallId entity = new PreInstallId(appId, preloadId, "success");
-        List<PreInstallId> preInstallsExpected = Collections.singletonList(entity);
+        PreInstallIdEntity entity = new PreInstallIdEntity(appId, preloadId, "success");
+        List<PreInstallIdEntity> preInstallsExpected = Collections.singletonList(entity);
         String json = new Gson().toJson(preInstallsExpected);
         MockWebServer server = new MockWebServer();
         server.enqueue(new MockResponse().setBody(json));
@@ -66,7 +66,7 @@ public class PreInstallClientJavaInteropTest {
                 null,
                 null);
         PreInstallClient preInstallClient = new PreInstallClient(application, mediaSource);
-        List<PreInstallId> preInstallsActual = preInstallClient.addSync(preInstallInfo);
+        List<PreInstallIdEntity> preInstallsActual = preInstallClient.addSync(preInstallInfo);
         Assert.assertEquals(preInstallsExpected.get(0).getTransactionId(),
                 preInstallsActual.get(0).getTransactionId());
     }

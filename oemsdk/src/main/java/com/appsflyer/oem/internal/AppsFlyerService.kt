@@ -1,6 +1,6 @@
 package com.appsflyer.oem.internal
 
-import com.appsflyer.oem.PreInstallId
+import com.appsflyer.oem.PreInstallIdEntity
 import com.appsflyer.oem.PreInstallInfo
 import retrofit2.http.*
 
@@ -9,5 +9,5 @@ interface AppsFlyerService {
     suspend fun registerPreinstalls(@Header("Authorization") authorization: String,
                                     @Path("appId") appId : String,
                                     @Body vararg preInstallInfos: PreInstallInfo
-    ): List<PreInstallId>
+    ): List<PreInstallIdEntity>
 }

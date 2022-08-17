@@ -4,13 +4,13 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.appsflyer.oem.PreInstallId
+import com.appsflyer.oem.PreInstallIdEntity
 
 @Dao
 internal interface PreInstallDao {
-    @Query("SELECT * from PreInstallId where appId = :appId")
-    fun select(appId: String): PreInstallId?
+    @Query("SELECT * from PreInstallIdEntity where appId = :appId")
+    fun select(appId: String): PreInstallIdEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(referrer: PreInstallId)
+    suspend fun insert(referrer: PreInstallIdEntity)
 }

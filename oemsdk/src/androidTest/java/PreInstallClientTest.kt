@@ -31,7 +31,7 @@ class PreInstallClientTest {
         val preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
         val server = MockWebServer()
             .also { server ->
-                PreInstallId(appId, preloadId, "success")
+                PreInstallIdEntity(appId, preloadId, "success")
                     .let(::listOf)
                     .let(Gson()::toJson)
                     .let(MockResponse()::setBody)
@@ -79,7 +79,7 @@ class PreInstallClientTest {
                 )
             }!!.let { cursor ->
                 cursor.moveToFirst()
-                cursor.getString(cursor.getColumnIndex(PreInstallId.KEY_TRANSACTION_ID))
+                cursor.getString(cursor.getColumnIndex(PreInstallIdEntity.KEY_TRANSACTION_ID))
                     .let { Assert.assertEquals(preloadId, it) }
             }
     }
@@ -90,7 +90,7 @@ class PreInstallClientTest {
         val preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
         val server = MockWebServer()
             .also { server ->
-                PreInstallId(appId, preloadId, "success")
+                PreInstallIdEntity(appId, preloadId, "success")
                     .let(::listOf)
                     .let(Gson()::toJson)
                     .let {

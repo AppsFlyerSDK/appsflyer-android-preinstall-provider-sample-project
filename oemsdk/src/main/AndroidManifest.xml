@@ -3,12 +3,15 @@
     package="com.appsflyer.oem">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application>
+        <!-- Provider must not define any read permissions, it will be queried without them -->
         <provider
-            android:name=".internal.PreInstallContentProvider"
-            android:authorities="${applicationId}.provider"
+            android:name=".PreInstallContentProvider"
+            android:authorities="${applicationId}.preinstall"
             android:exported="true"
             tools:ignore="ExportedContentProvider">
+            <!-- Provider is queried by action and query path, so it's important to have it like this -->
             <intent-filter>
                 <action android:name="com.appsflyer.referrer.INSTALL_PROVIDER" />
             </intent-filter>
