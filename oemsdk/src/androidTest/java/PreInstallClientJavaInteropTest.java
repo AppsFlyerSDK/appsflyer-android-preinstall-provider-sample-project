@@ -32,7 +32,7 @@ public class PreInstallClientJavaInteropTest {
         Application application = ApplicationProvider.getApplicationContext();
         String appId = BuildConfig.LIBRARY_PACKAGE_NAME + ".test";
         String preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4";
-        PreInstallId preInstallExpected = new PreInstallId(appId, preloadId, "success");
+        PreInstallId preInstallExpected = new PreInstallId(appId, preloadId);
         String json = new Gson().toJson(preInstallExpected);
 
         MockWebServer server = new MockWebServer();

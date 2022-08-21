@@ -15,7 +15,6 @@ class PreInstallId(
     val appId: String,
     @SerializedName(KEY_TRANSACTION_ID)
     val transactionId: String,
-    val status: String? = null
 ) {
     companion object {
         const val KEY_APP_ID = "app_id"

@@ -64,7 +64,7 @@ class PreInstallClientTest {
         val bodyExpected = Gson().toJson(info)
         val response =
             runBlocking { PreInstallClient(application, mediaSource).registerAppInstall(info) }
-        Assert.assertEquals("success", response.status)
+        Assert.assertEquals(response.transactionId, preloadId)
 
         server
             .takeRequest(TIMEOUT, TimeUnit.SECONDS)
@@ -119,7 +119,7 @@ class PreInstallClientTest {
     }
 
     private fun mockS2SResponse(statusCode: Int) {
-        val body = PreInstallId(appId, preloadId, "success")
+        val body = PreInstallId(appId, preloadId)
         val jsonBody = Gson().toJson(body)
         val mockResponse = MockResponse()
             .setResponseCode(statusCode)

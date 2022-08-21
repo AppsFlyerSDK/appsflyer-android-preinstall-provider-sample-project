@@ -13,8 +13,6 @@ import java.io.IOException
  */
 private const val DEV_KEY = "replace with your AppsFlyer S2S dev key"
 
-class DownloadRegisterFailedException(val s2sResponse: PreInstallId) : Exception()
-
 class PreInstallClient(application: Application, private val mediaSource: String) {
     private val dao = PreInstallDatabase.get(application).preInstallDao()
     private val appsFlyerService = ApiModule.appsFlyerService()
@@ -23,10 +21,11 @@ class PreInstallClient(application: Application, private val mediaSource: String
      * Performs api call to S2S endpoint and saves successful response to the [PreInstallDatabase]
      *
      * @return fetched and successfully saved [PreInstallId]
-     * @throws [IOException], [HttpException] in case of network errors
-     * @throws [DownloadRegisterFailedException] in case we received fail response from S2S endpoint
+     * @throws [IOException] in case of network errors
+     * @throws [HttpException] in case of fail response from backend
+     * (see "AppsFlyer Preload Campaign Measurement" doc for details)
      * */
-    @Throws(IOException::class, HttpException::class, DownloadRegisterFailedException::class)
+    @Throws(IOException::class, HttpException::class)
     suspend fun registerAppInstall(info: PreInstallInfoRequest): PreInstallId {
         // call S2S endpoint with app download attribution data
         val response = appsFlyerService.registerAppDownload(
@@ -36,11 +35,7 @@ class PreInstallClient(application: Application, private val mediaSource: String
         )
 
         // on success response - save response to the local database, which will be later queried by content provider
-        if (response.status == "success") {
-            dao.insert(response)
-        } else {
-            throw DownloadRegisterFailedException(response)
-        }
+        dao.insert(response)
 
         return response
     }
@@ -49,7 +44,7 @@ class PreInstallClient(application: Application, private val mediaSource: String
     /**
      * Synchronous alias for [PreInstallClient.registerAppInstall] main usecase is call api from java code.
      */
-    @Throws(IOException::class, HttpException::class, DownloadRegisterFailedException::class)
+    @Throws(IOException::class, HttpException::class)
     fun registerAppInstallSync(info: PreInstallInfoRequest) =
         runBlocking { registerAppInstall(info) }
 }
