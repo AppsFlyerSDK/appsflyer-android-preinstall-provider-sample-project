@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import retrofit2.HttpException
@@ -19,26 +20,31 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
+private const val TIMEOUT = 4L
+
+/**
+ * This class contains integration tests to verify if sample code properly stores data,
+ * received from backend into the room database and then returns it via content provider
+ */
 @RunWith(AndroidJUnit4::class)
 class PreInstallClientTest {
-    companion object {
-        const val TIMEOUT = 4L
+
+    private val appId = BuildConfig.LIBRARY_PACKAGE_NAME + ".test"
+    private val preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
+
+    // mock response from S2S api
+    private val server = MockWebServer()
+
+    @Before
+    fun setUp() {
+        // make api module send requests to mockweb server
+        ApiModule.preloadUrl = server.url(URL(ApiModule.preloadUrl).path).toString()
     }
 
-    // TODO: test multiple appIds
     @Test
     fun success() {
-        val appId = BuildConfig.LIBRARY_PACKAGE_NAME + ".test"
-        val preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
-        val server = MockWebServer()
-            .also { server ->
-                PreInstallId(appId, preloadId, "success")
-                    .let(::listOf)
-                    .let(Gson()::toJson)
-                    .let(MockResponse()::setBody)
-                    .let(server::enqueue)
-            }
-        ApiModule.preloadUrl = server.url(URL(ApiModule.preloadUrl).path).toString()
+        mockS2SResponse(HttpURLConnection.HTTP_OK)
+
         val application = ApplicationProvider.getApplicationContext<Application>()
         val mediaSource = "nexus"
         val campaign = "euro2020"
@@ -53,7 +59,7 @@ class PreInstallClientTest {
             campaignId = campaignId,
         )
         val bodyExpected = info.let(::listOf).let(Gson()::toJson)
-        runBlocking { PreInstallClient(application, mediaSource).add(info) }
+        runBlocking { PreInstallClient(application, mediaSource).attributeAppsInstall(info) }
             .forEach { Assert.assertEquals("success", it.status) }
         server
             .takeRequest(TIMEOUT, TimeUnit.SECONDS)
@@ -62,8 +68,10 @@ class PreInstallClientTest {
                 Assert.assertEquals(bodyExpected, bodyActual)
                 val authorizationActual = request.getHeader("Authorization")
                 val authorizationExpected = HashUtils.hmac(bodyExpected, mediaSource)
+                // verify if we properly sent auth
                 Assert.assertEquals(authorizationExpected, authorizationActual)
             }
+
         Intent("com.appsflyer.referrer.INSTALL_PROVIDER")
             .let { application.packageManager.queryIntentContentProviders(it, 0) }
             .first()
@@ -87,20 +95,8 @@ class PreInstallClientTest {
 
     @Test(expected = HttpException::class)
     fun httpNot200Ok() {
-        val appId = BuildConfig.LIBRARY_PACKAGE_NAME + ".test"
-        val preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
-        val server = MockWebServer()
-            .also { server ->
-                PreInstallId(appId, preloadId, "success")
-                    .let(::listOf)
-                    .let(Gson()::toJson)
-                    .let {
-                        MockResponse()
-                            .setBody(it)
-                            .setResponseCode(HttpURLConnection.HTTP_BAD_GATEWAY)
-                    }
-                    .let(server::enqueue)
-            }
+        mockS2SResponse(HttpURLConnection.HTTP_BAD_GATEWAY)
+
         ApiModule.preloadUrl = server.url(URL(ApiModule.preloadUrl).path).toString()
         val application = ApplicationProvider.getApplicationContext<Application>()
         val mediaSource = "nexus"
@@ -115,7 +111,17 @@ class PreInstallClientTest {
             campaignName = campaign,
             campaignId = campaignId
         )
-        runBlocking { PreInstallClient(application, mediaSource).add(info) }
+        runBlocking { PreInstallClient(application, mediaSource).attributeAppsInstall(info) }
             .forEach { Assert.assertEquals("success", it.status) }
+    }
+
+    private fun mockS2SResponse(statusCode: Int) {
+        val body = listOf(PreInstallId(appId, preloadId, "success"))
+        val jsonBody = Gson().toJson(body)
+        val mockResponse = MockResponse()
+            .setResponseCode(statusCode)
+            .setBody(jsonBody)
+
+        server.enqueue(mockResponse)
     }
 }

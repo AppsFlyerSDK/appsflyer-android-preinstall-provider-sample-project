@@ -14,9 +14,11 @@ class PreInstallClient(application: Application, private val mediaSource: String
     private val dao = PreInstallDatabase.get(application).preInstallDao()
     private val appsFlyerService = ApiModule.appsFlyerService()
 
-    /** be sure to handle Exceptions */
+    /**
+     * be sure to handle Exceptions
+     * */
     @Throws(IOException::class, HttpException::class)
-    suspend fun add(vararg infos: PreInstallInfoRequest) =
+    suspend fun attributeAppsInstall(vararg infos: PreInstallInfoRequest) =
         Gson()
             .toJson(infos)
             .let { HashUtils.hmac(it, mediaSource) }
@@ -43,5 +45,5 @@ class PreInstallClient(application: Application, private val mediaSource: String
 
     /** be sure to handle Exceptions */
     @Throws(IOException::class, HttpException::class)
-    fun addSync(vararg info: PreInstallInfoRequest) = runBlocking { add(*info) }
+    fun addSync(vararg info: PreInstallInfoRequest) = runBlocking { attributeAppsInstall(*info) }
 }
