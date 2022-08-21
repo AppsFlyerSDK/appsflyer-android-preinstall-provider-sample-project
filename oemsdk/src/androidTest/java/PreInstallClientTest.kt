@@ -3,9 +3,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.appsflyer.oem.*
+import com.appsflyer.oem.BuildConfig
+import com.appsflyer.oem.EngagementType
+import com.appsflyer.oem.PreInstallClient
+import com.appsflyer.oem.PreInstallInfoRequest
 import com.appsflyer.oem.internal.ApiModule
-import com.appsflyer.oem.internal.HashUtils
 import com.appsflyer.oem.models.PreInstallId
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
@@ -20,6 +22,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
+private const val EXPECTED_DEV_KEY = "replace with your AppsFlyer S2S dev key"
 private const val TIMEOUT = 4L
 
 /**
@@ -58,18 +61,19 @@ class PreInstallClientTest {
             campaignName = campaign,
             campaignId = campaignId,
         )
-        val bodyExpected = info.let(::listOf).let(Gson()::toJson)
-        runBlocking { PreInstallClient(application, mediaSource).attributeAppsInstall(info) }
-            .forEach { Assert.assertEquals("success", it.status) }
+        val bodyExpected = Gson().toJson(info)
+        val response =
+            runBlocking { PreInstallClient(application, mediaSource).registerAppInstall(info) }
+        Assert.assertEquals("success", response.status)
+
         server
             .takeRequest(TIMEOUT, TimeUnit.SECONDS)
             .let { request ->
                 val bodyActual = request!!.body.readUtf8()
                 Assert.assertEquals(bodyExpected, bodyActual)
                 val authorizationActual = request.getHeader("Authorization")
-                val authorizationExpected = HashUtils.hmac(bodyExpected, mediaSource)
                 // verify if we properly sent auth
-                Assert.assertEquals(authorizationExpected, authorizationActual)
+                Assert.assertEquals(EXPECTED_DEV_KEY, authorizationActual)
             }
 
         Intent("com.appsflyer.referrer.INSTALL_PROVIDER")
@@ -111,12 +115,11 @@ class PreInstallClientTest {
             campaignName = campaign,
             campaignId = campaignId
         )
-        runBlocking { PreInstallClient(application, mediaSource).attributeAppsInstall(info) }
-            .forEach { Assert.assertEquals("success", it.status) }
+        runBlocking { PreInstallClient(application, mediaSource).registerAppInstall(info) }
     }
 
     private fun mockS2SResponse(statusCode: Int) {
-        val body = listOf(PreInstallId(appId, preloadId, "success"))
+        val body = PreInstallId(appId, preloadId, "success")
         val jsonBody = Gson().toJson(body)
         val mockResponse = MockResponse()
             .setResponseCode(statusCode)
