@@ -1,60 +1,59 @@
-<img src="https://massets.appsflyer.com/wp-content/uploads/2019/05/21152710/logo.png"  width="450">
+# PreInstall Provider Sample Project
 
-# Pre install SDK
+## Introduction
 
-SDK fetches ids from appsflyer backend for pre-install attribution
+This repository contains an API reference and a sample project for the client side of the Preinstall Campaigns measurement.
+This part of the integration is intended for Preinstall Providers wishing to use AppsFlyer's Preinstall Campaign measurement. 
 
-#### Content Provider data structure
-Column|   Type | Description
----   |   ---  | ----
+
+**Important Note**:  This is a reference implementation of the Preinstall Provider code; It should not be used as is. 
+Please review code and adjust it according to your project's needs.
+
+## Implementation 
+
+
+Please use this  [sample project](/oemsdk/src/main/java/com/appsflyer/oem/PreInstallContentProvider.kt) for the integration. 
+
+The sample project consists of 2 main modules:
+* `PreInstallClient` - Fetch a transaction_id from Appsflyer's backend
+* `PreInstallContentProvider` - Expose the transaction_id with a ContentProvider, which can then be accessed by the AppsFlyer SDK to obtain the transaction_id and send it to the the attribution server.
+
+#### Content Provider - Data Structure
+
+Column|  Type | Description
+---   |   ---  | ----  
 `0`   | String |  transaction_id
-### API
-```kotlin
-class PreInstallClient
-```
-A main class used to create an interface between OEM and AppsFlyer OEM Client.
-```kotlin
-class PreInstallClient(application: Application, private val mediaSource: String)
-```
-The partner unique identifier
 
-```kotlin
-@Throws(IOException::class)
-suspend fun add(vararg info: PreInstallInfo): List<PreInstallId>
-```
-- `info` - the object contains attribution parameters. 
+#### Important Note
+- The ContentProvider should check for the `callingPackage` (i.e the app_id), and return only the data associated
+with that app_id.  See the `PreInstallContentProvider` for further reference.
 
 
 
-| Field Name| Description| Type| Mandatory |
-| ---| --- | ------------------------------------- | --------- |
-| af\_engagement\_type                           | Type of the preinstall flow (`preload` or `click_to_download`)
-| af_media_source                                | Partner unique identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | String                                | Yes       |
-| install\_time                                  | Timestamp representing the install time                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Epoch timestamp - long (milliseconds) | Yes       |
-| app\_id                                        | Application unique identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | String                                | Yes       |
-| af_campaign                                    | Campaign name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | String                                | No        |
-| af_campaign_id                                 | Campaign Id                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | String                                | No        |
-| af\_adset                                      | Adset name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | String                                | No        |
-| af\_adset\_id                                  | Adset Id                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | String                                | No        |
-| af\_ad                                         | Ad Name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | String                                | No        |
-| af\_ad\_id                                     | Ad Id                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | String                                | No        |
-| af\_prt                                        | Agency Account Name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | String                                | No        |
-| af_click_id                                    | Ad network unique transaction identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | String                                | No        |
-| af\_ad\_type                                   | Ad type: <br> **text**: an ad unit containing only text, e.g. a search result<br> **banner**: a basic format that appears at the top or bottom of the device screen<br> **interstitial**: a full-page ad that appears during breaks in the current experience<be> **video**: a standard video, i.e. non-rewarded<br> **rewarded\_video**: an ad unit offering in-app rewards in exchange for watching a video<br>**playable**: an ad unit containing an interactive preview of the app experience<br>**sponsored\_content**: a link included in a piece of sponsored content, like an advertorial article<br>**audio**: an audio ad | String                                | No        |
-| af\_channel      | The media source channel through which the ads are distributed, e.g., UAC\_Search, UAC\_Display, Instagram, Facebook Audience Network etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | String                                | No        |
-| af\_custom\[n\]<br>(n=1-5) example: af\_custom1 | Optional custom parameter defined by the advertiser.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | String                                | No        |
+### API Reference
 
-An class that returns the information about processing preload.
+```kotlin  
+class PreInstallClient(application: Application, private val mediaSource: String)  
+```  
 
-```kotlin
+- `mediaSource` - The partner unique identifier
+
+```kotlin  
+@Throws(IOException::class)  
+suspend fun registerAppInstall(info: PreInstallInfo): PreInstallId  
+```  
+
+- `info` - the object that contains attribution parameters. 
+
+
+```kotlin  
 class PreInstallId
 ```
-Response:
+This class represents the object that returns from registering a PreInstallation.
 
-Name                | Description
----                 | ----
+Name                | Example
+---                 | ----  
 `app_id`            | "com.appsflyer.game"
 `transaction_id`    | "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4"
-`status`            | "success" or "failure"
 
-[Example](/oemsdk/src/androidTest/java/PreInstallTest.kt)
+Usage example can be found in the [Integration Test](/oemsdk/src/androidTest/java/PreInstallClientTest.kt)

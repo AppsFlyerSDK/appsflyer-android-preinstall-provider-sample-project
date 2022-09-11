@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.appsflyer.oem.PreInstallId
+import com.appsflyer.oem.models.PreInstallId
 
 @Dao
 internal interface PreInstallDao {
