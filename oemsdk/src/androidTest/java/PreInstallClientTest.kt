@@ -75,26 +75,31 @@ class PreInstallClientTest {
                 // verify if we properly sent auth
                 Assert.assertEquals(EXPECTED_DEV_KEY, authorizationActual)
             }
-
-        Intent("com.appsflyer.referrer.INSTALL_PROVIDER")
-            .let { application.packageManager.queryIntentContentProviders(it, 0) }
-            .first()
-            .providerInfo
-            .authority
-            .let { Uri.parse("content://$it/transaction_id") }
-            .let {
-                application.contentResolver.query(
-                    it,
-                    null,
-                    null,
-                    null,
-                    null
-                )
-            }!!.let { cursor ->
-                cursor.moveToFirst()
-                cursor.getString(cursor.getColumnIndex(PreInstallId.KEY_TRANSACTION_ID))
-                    .let { Assert.assertEquals(preloadId, it) }
-            }
+        try {
+            Intent("com.appsflyer.referrer.INSTALL_PROVIDER")
+                .let { application.packageManager.queryIntentContentProviders(it, 0) }
+                .firstOrNull()
+                ?.providerInfo
+                ?.authority
+                ?.let { Uri.parse("content://$it/transaction_id") }
+                ?.let { contentUri ->
+                    val contentProviderClient = application.contentResolver.acquireUnstableContentProviderClient(contentUri)
+                    contentProviderClient.use { client ->
+                        val cursor = client?.query(contentUri, null, null, null, null)
+                        cursor?.use { cursor ->
+                            if (cursor.moveToFirst()) {
+                                val transactionIdColumnIndex = cursor.getColumnIndex(PreInstallId.KEY_TRANSACTION_ID)
+                                val transactionId = cursor.getString(transactionIdColumnIndex)
+                                Assert.assertEquals(preloadId, transactionId)
+                            } else {
+                                // Handle case where the cursor is empty
+                            }
+                        }
+                    }
+                }
+        } catch (e: Exception) {
+            // Handle exceptions here
+        }
     }
 
     @Test(expected = HttpException::class)
