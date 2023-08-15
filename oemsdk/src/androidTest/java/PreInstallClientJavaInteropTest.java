@@ -4,7 +4,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.appsflyer.oem.BuildConfig;
-import com.appsflyer.oem.DownloadRegisterFailedException;
 import com.appsflyer.oem.EngagementType;
 import com.appsflyer.oem.PreInstallClient;
 import com.appsflyer.oem.PreInstallInfoRequest;
@@ -28,7 +27,7 @@ import okhttp3.mockwebserver.MockWebServer;
 @RunWith(AndroidJUnit4.class)
 public class PreInstallClientJavaInteropTest {
     @Test
-    public void dataIsSavedOnSuccessResponse() throws IOException, DownloadRegisterFailedException {
+    public void dataIsSavedOnSuccessResponse() throws IOException {
         Application application = ApplicationProvider.getApplicationContext();
         String appId = BuildConfig.LIBRARY_PACKAGE_NAME + ".test";
         String preloadId = "AC9FB4FB-AAAA-BBBB-88E6-2840D9BB17F4";
